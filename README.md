@@ -1,9 +1,11 @@
 # SQL-Cheat-Sheet
 
 **QUERIES**
+```sql
 SELECT first_name AS name 
 FROM people 
 WHERE name = 'Daniel' AND age = 34;
+```
 
 SELECT DISTINCT first_name FROM people;
 //= equal, <> not equal to
