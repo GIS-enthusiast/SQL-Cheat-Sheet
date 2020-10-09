@@ -1,6 +1,6 @@
 # SQL-Cheat-Sheet
 
-**Queries**
+## Queries
 ```sql
 SELECT first_name AS name 
 FROM people 
@@ -35,7 +35,7 @@ WHERE cancellation_code IS NULL;
 WHERE cancellation_code IS NOT NULL; 
 ```
 
-**Operators**
+## Operators
 AND
 OR
 BETWEEN
@@ -55,11 +55,11 @@ Opposite of IN is NOT IN, ie dont include these names.
 AND, OR etc have a hierachy, AND is higher than OR. TO avoid confusion at runtime, use parentheses!
 Use parentheses when writing complex expressions.
 
-**Joins**
+##Joins
 Three types of joins.
 Primary keys and foreign keys. Primary key is the first column in a table. Foreign keys are columns from other tables.
 
-*Inner Join* 
+### Inner Join
 Fields must exsist in both tables.
 ```sql
 SELECT customers.first_name,
@@ -81,7 +81,7 @@ FROM customers,
 orders
 WHERE ustomers.customer_id = orders.customer_id;
 ```
-# Table Aliases
+## Table Aliases
 Saves time by writing less. Three conventions:
 1. First Letter, ie. c for customers.
 2. Shortcut, ie. cust for customers.
