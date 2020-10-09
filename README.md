@@ -200,7 +200,7 @@ ORDER BY AVG(p.dep_delay_new) DESC;
 ```
 Note above: Non aggregate fields must appear in the GROUP BY statement.
 ### Having (Filtering Aggregate Results)
-WHERE is designed to filter rows. HAVING is designed to filter groups or aggregates.
+WHERE is designed to filter rows. HAVING is designed to filter groups or aggregates. HAVING must always directly follow the GROUP BY clause.
 ```sql
 SELECT grade_lvl,
 	AVG(age) AS avg_age
