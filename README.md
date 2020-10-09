@@ -81,9 +81,8 @@ FROM customers,
 orders
 WHERE ustomers.customer_id = orders.customer_id;
 ```
-#**Table Aliases**
-Saves time by writing less.
-Three conventions:
+#**Table Aliases**#
+Saves time by writing less. Three conventions:
 1. First Letter, ie. c for customers.
 2. Shortcut, ie. cust for customers.
 3. ABC sequential, ie. a for customers, b for orders.
