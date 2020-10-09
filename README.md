@@ -152,5 +152,75 @@ ON p.carrier = cc.carrier_code
 LEFT JOIN codes_cancellation ca
 ON p.cancellation_code = ca.cancellation_code;
 ```
+## Sorting 
+By default results are returned in the order in which they are stored. We can change this using ORDER BY, SORT BY ASC and SORT BY DESC.
+```sql
+SELECT name, state
+FROM residency
+ORDER BY name;
+
+SELECT name, age
+FROM people
+SORT BY DESC age;
+```
+You can ORDER BY on more than one column.
+```sql
+SELECT name, state
+FROM residency
+ORDER BY state, name;
+
+SELECT name, state
+FROM residency
+ORDER BY state DESC, name ASC;
+```
+Short cut
+```sql
+SELECT name, state
+FROM residency
+ORDER BY 2 DESC, 1 ASC;
+```
+## Aggregate Functions
+Count, Sum, Average, Min, Max
+```sql
+SELECT AVG(age) AS avg_age
+FROM person;
+```
+The following would return the average departure delay for different airlines.
+```sql
+SELECT p.mkt_carrier,
+	cc.carrier_desc,
+	AVG(p.dep_delay_new) AS departure_delay,
+	AVG(p.arr_delay_new) AS arrival delay
+FROM performance p
+INNER JOIN code_carrier cc
+ON p.mkt_carrier = cc.carrier_code
+GROUP BY p.mkt_carrier,
+		cc.carrier_desc
+ORDER BY AVG(p.dep_delay_new) DESC;
+```
+Note above: Non aggregate fields must appear in the GROUP BY statement.
+### Having (Filtering Aggregate Results)
+WHERE is designed to filter rows. HAVING is designed to filter groups or aggregates.
+```sql
+SELECT grade_lvl,
+	AVG(age) AS avg_age
+FROM person
+GROUP BY grade_lvl
+HAVING AVG(age) < 19;
+
+SELECT p.mkt_carrier,
+	cc.carrier_desc,
+	AVG(p.dep_delay_new) AS departure_delay,
+	AVG(p.arr_delay_new) AS arrival delay
+FROM performance p
+INNER JOIN code_carrier cc
+ON p.mkt_carrier = cc.carrier_code
+GROUP BY p.mkt_carrier,
+		cc.carrier_desc
+HAVING AVG(p.dep_delay_new) < 15
+AND AVG(p.arr_delay_new) < 15
+ORDER BY AVG(p.dep_delay_new) DESC;
+```
+The above with only show average arrival and depatures delays less than 15 minutes for airlines in descending order for departure delays.
 
 
