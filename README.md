@@ -84,7 +84,7 @@ WHERE ustomers.customer_id = orders.customer_id;
 #**Table Aliases**
 Saves time by writing less.
 Three conventions:
-1. First Letter, ie c for customers.
+1. First Letter, ie. c for customers.
 2. Shortcut, ie. cust for customers.
 3. ABC sequential, ie. a for customers, b for orders.
 
@@ -97,8 +97,9 @@ FROM customers AS c
 INNER JOIN orders AS o
 ON c.customer_id = o.customer_id
 WHERE c.last_name = 'Dodd';
-
+```
 Shortcut is to simply drop the AS
+
 ```sql
 FROM customers c
 INNER JOIN orders o
