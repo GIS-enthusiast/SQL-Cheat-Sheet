@@ -55,7 +55,30 @@ Opposite of IN is NOT IN, ie dont include these names.
 AND, OR etc have a hierachy, AND is higher than OR. TO avoid confusion at runtime, use parentheses!
 Use parentheses when writing complex expressions.
 
-##Joins
+## Table Aliases
+Saves time by writing less. Three conventions:
+1. First Letter, ie. c for customers.
+2. Shortcut, ie. cust for customers.
+3. ABC sequential, ie. a for customers, b for orders.
+
+```sql
+SELECT c.first_name,
+		c.last_name,
+		o.first_name,
+		o.last_name
+FROM customers AS c
+INNER JOIN orders AS o
+ON c.customer_id = o.customer_id
+WHERE c.last_name = 'Dodd';
+```
+Shortcut is to simply drop the AS
+
+```sql
+FROM customers c
+INNER JOIN orders o
+ON c.customer_id = o.customer_id
+```
+## Joins
 Three types of joins.
 Primary keys and foreign keys. Primary key is the first column in a table. Foreign keys are columns from other tables.
 
@@ -81,26 +104,53 @@ FROM customers,
 orders
 WHERE ustomers.customer_id = orders.customer_id;
 ```
-## Table Aliases
-Saves time by writing less. Three conventions:
-1. First Letter, ie. c for customers.
-2. Shortcut, ie. cust for customers.
-3. ABC sequential, ie. a for customers, b for orders.
-
+## Outer Joins
+Left or Right outer join determines which table we want to have precedence. From example for a left outer join it is all rows from the left table and those that match from the right table. Left joins are far more prevelent and encouraged as they are typically easier to read.
 ```sql
 SELECT c.first_name,
 		c.last_name,
 		o.first_name,
 		o.last_name
-FROM customers AS c
-INNER JOIN orders AS o
+FROM customers c
+LEFT OUTER JOIN orders o
 ON c.customer_id = o.customer_id
 WHERE c.last_name = 'Dodd';
 ```
-Shortcut is to simply drop the AS
-
+ON specifies fields to join.
+Shortcut is to ommit OUTER
 ```sql
 FROM customers c
-INNER JOIN orders o
+LEFT JOIN orders o
+ON c.customer_id = o.customer_id
+
+FROM customers c
+RIGHT JOIN orders o
 ON c.customer_id = o.customer_id
 ```
+## Full Outer Join (Full Join)
+All rows from left and right
+```sql
+SELECT c.first_name,
+		c.last_name,
+		o.first_name,
+		o.last_name
+FROM customers c
+FULL OUTER JOIN orders o
+ON c.customer_id = o.customer_id;
+```
+## Look Up Tables
+Commoning used in practice to join abbreviations/codes to full names.
+```sql
+SELECT p.flight_date,
+		p.carrier,
+		cc.carrier_desc AS airline,
+		p.cancellation_code,
+		ca.cancel_desc
+FROM performance p
+INNER JOIN codes.carrier cc
+ON p.carrier = cc.carrier_code
+LEFT JOIN codes_cancellation ca
+ON p.cancellation_code = ca.cancellation_code;
+```
+
+
