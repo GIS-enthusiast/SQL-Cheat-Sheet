@@ -8,9 +8,9 @@ WHERE name = 'Daniel' AND age = 34;
 
 SELECT DISTINCT first_name 
 FROM people;
-WHERE name = 'Daniel' AND age = 34;
+WHERE name = 'Daniel' AND age = 34 AND age <> 40;
 ```
-Note: //= equal, <> not equal to
+Note: = equal, <> not equal to
 
 ```sql
 SELECT first_name AS F_name 
