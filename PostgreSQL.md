@@ -335,7 +335,8 @@ SELECT ST_AsText(geom)
 SELECT name, ST_Area(geom)
   FROM geometries
   WHERE name LIKE 'Polygon%';
-  
+```
+
 #### Collections: 
 
 Refer to the Postgis Totorial Site for a list of geometry functions and documentation:
@@ -350,7 +351,6 @@ Here’s an example that consumes GML and output JSON:
 SELECT ST_AsGeoJSON(ST_GeomFromGML('<gml:Point><gml:coordinates>1,1</gml:coordinates></gml:Point>'));
 ```
 #### Geometry Exercises: 
-
 ```sql
 --“How many census blocks in New York City have a hole in them?”
 SELECT Count(*)
