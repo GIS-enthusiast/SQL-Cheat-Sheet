@@ -223,4 +223,73 @@ ORDER BY AVG(p.dep_delay_new) DESC;
 ```
 The above with only show average arrival and depatures delays less than 15 minutes for airlines in descending order for departure delays.
 
+#PostGIS
 
+## Setup
+1. Download PostGIS by installing OpenGeoSuite, see link. http://postgis.net/workshops/postgis-intro/installation.html test.
+2. PostGIS has a number of administrative front ends. The primary is the psql command line tool. Free and open source PgAdmin is another popular tool.
+3. After creating a new database with postgres as the owner add the PostGIS spatial extention as follows:
+```sql
+CREATE EXTENSION postgis;
+```
+Confirm Postgis is installed with:
+```sql
+SELECT postgis_full_version();
+```
+## Functions 
+
+Length of strings:
+```sql
+SELECT char_length(name)
+FROM nyc_neighborhoods
+WHERE boroname = 'Brooklyn';
+  ```
+Aggregates:
+```sql
+SELECT boroname, avg(char_length(name)), stddev(char_length(name))
+FROM nyc_neighborhoods
+GROUP BY boroname;
+  
+SELECT
+boroname,
+100 * Sum(popn_white)/Sum(popn_total) AS white_pct
+FROM nyc_census_blocks
+GROUP BY boroname;
+```
+## Geometries
+
+Postgis uses a geometry column of type geometry, in practice often called geom.
+```sql
+CREATE TABLE geometries (name varchar, geom geometry);
+
+INSERT INTO geometries VALUES
+  ('Point', 'POINT(0 0)'),
+  ('Linestring', 'LINESTRING(0 0, 1 1, 2 1, 2 2)'),
+  ('Polygon', 'POLYGON((0 0, 1 0, 1 1, 0 1, 0 0))'),
+  ('PolygonWithHole', 'POLYGON((0 0, 10 0, 10 10, 0 10, 0 0),(1 1, 1 2, 2 2, 2 1, 1 1))'),
+  ('Collection', 'GEOMETRYCOLLECTION(POINT(2 0),POLYGON((0 0, 1 0, 1 1, 0 1, 0 0)))');
+
+SELECT name, ST_AsText(geom) FROM geometries;
+```
+There are two metadata tables in Postgis
+1. spatial_ref_sys : this lists all spatial reference systems known to the database
+2. geometry_columns : 
+
+### Representing Real World Objects
+```sql
+SELECT name, ST_GeometryType(geom), ST_NDims(geom), ST_SRID(geom)
+  FROM geometries;
+```
+#### Points
+Read coordinates from a point:
+```sql
+SELECT ST_X(geom), ST_Y(geom)
+  FROM geometries
+  WHERE name = 'Point';
+ 
+ -- The following would return the first 10 records from the geometry column:
+ 
+ SELECT name, ST_AsText(geom)
+  FROM nyc_subway_stations
+  LIMIT 10;
+  ```
