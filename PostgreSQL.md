@@ -224,6 +224,8 @@ ORDER BY AVG(p.dep_delay_new) DESC;
 The above with only show average arrival and depatures delays less than 15 minutes for airlines in descending order for departure delays.
 
 #PostGIS
+Use this resource below!
+http://postgis.net/workshops/postgis-intro/index.html
 
 ## Setup
 1. Download PostGIS by installing OpenGeoSuite, see link. http://postgis.net/workshops/postgis-intro/installation.html test.
@@ -293,3 +295,80 @@ SELECT ST_X(geom), ST_Y(geom)
   FROM nyc_subway_stations
   LIMIT 10;
   ```
+#### Lines
+
+Some specific spatial functions for linestrings:
+
+ 1. ST_Length(geometry) returns the length of the linestring
+ 2. ST_StartPoint(geometry) returns the first coordinate as a point
+ 3. ST_EndPoint(geometry) returns the last coordinate as a point
+ 4. ST_NPoints(geometry) returns the number of coordinates in the linestring
+
+```sql
+SELECT ST_AsText(geom)
+  FROM geometries
+  WHERE name = 'Linestring';
+  
+  -- Length as follows:
+  
+SELECT ST_Length(geom)
+  FROM geometries
+  WHERE name = 'Linestring';
+```
+#### Polygons
+
+Some specific spatial functions for Polygons:
+1. ST_Area(geometry) returns the area of the polygons
+2. ST_NRings(geometry) returns the number of rings (usually 1, more of there are holes)
+3. ST_ExteriorRing(geometry) returns the outer ring as a linestring
+4. ST_InteriorRingN(geometry,n) returns a specified interior ring as a linestring
+5. ST_Perimeter(geometry) returns the length of all the rings
+
+In SQL the % symbol is used along with LIKE to do globbing. 
+```sql
+SELECT ST_AsText(geom)
+  FROM geometries
+  WHERE name LIKE 'Polygon%';
+
+-- To find the area:
+
+SELECT name, ST_Area(geom)
+  FROM geometries
+  WHERE name LIKE 'Polygon%';
+  
+#### Collections: 
+
+Refer to the Postgis Totorial Site for a list of geometry functions and documentation:
+http://postgis.net/workshops/postgis-intro/geometries.html
+
+### Geometry Input and Output: 
+Postgis supports many formats for other applications, WKT, WKB, GML, KML, GeoJSON and SVG.
+Here’s an example that consumes GML and output JSON:
+```sql
+SELECT ST_AsGeoJSON(ST_GeomFromGML('<gml:Point><gml:coordinates>1,1</gml:coordinates></gml:Point>'));
+```
+#### Geometry Exercises: 
+```sql
+--“How many census blocks in New York City have a hole in them?”
+SELECT Count(*)
+  FROM nyc_census_blocks
+  WHERE ST_NumInteriorRings(ST_GeometryN(geom,1)) > 0;
+  
+--“What is the total length of streets (in kilometers) in New York City?” 
+SELECT Sum(ST_Length(geom)) / 1000
+  FROM nyc_streets;
+
+--“What is the JSON representation of the boundary of the ‘West Village’?”
+SELECT ST_AsGeoJSON(geom)
+  FROM nyc_neighborhoods
+  WHERE name = 'West Village';
+  
+--“What is the length of streets in New York City, summarized by type?”
+SELECT type, Sum(ST_Length(geom)) AS length
+FROM nyc_streets
+GROUP BY type
+ORDER BY length DESC;
+```
+
+
+  
