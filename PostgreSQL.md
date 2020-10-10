@@ -342,12 +342,15 @@ Refer to the Postgis Totorial Site for a list of geometry functions and document
 http://postgis.net/workshops/postgis-intro/geometries.html
 
 ### Geometry Input and Output: 
+
 Postgis supports many formats for other applications, WKT, WKB, GML, KML, GeoJSON and SVG.
 Here’s an example that consumes GML and output JSON:
+
 ```sql
 SELECT ST_AsGeoJSON(ST_GeomFromGML('<gml:Point><gml:coordinates>1,1</gml:coordinates></gml:Point>'));
 ```
 #### Geometry Exercises: 
+
 ```sql
 --“How many census blocks in New York City have a hole in them?”
 SELECT Count(*)
