@@ -489,12 +489,13 @@ SELECT Sum(ST_Length(ST_Transform(geom,2831)))
 ```
 ## Geometry Constructing: 
 ST_Buffer
+```sql
 -- Make a new table with a Liberty Island 500m buffer zone
 CREATE TABLE liberty_island_zone AS
 SELECT ST_Buffer(geom,500)::geometry(Polygon,26918) AS geom -- :: is a CAST operation.
 FROM nyc_census_blocks
 WHERE blkid = '360610001001001';
-
+```
 ST_Intersection and ST_Union
 http://postgis.net/workshops/postgis-intro/geometry_returning.html#st-intersection
 
