@@ -402,7 +402,7 @@ SELECT name
 FROM nyc_subway_stations
 WHERE ST_Equals(geom, '0101000020266900000EEBD4CF27CF2141BC17D69516315141');
 ```
-ST_Intersects, ST_Crosses, and ST_Overlaps test whether the interiors of the geometries intersect, and ST_Disjoint checks that they do not intersect, although checking "not intersects" is better because they can be spatially indexed.
+ST_Intersects, ST_Crosses, and ST_Overlaps test whether the interiors of the geometries intersect, and ST_Disjoint checks that they do not intersect, although checking "not intersects" is better because they can be spatially indexed. Others, ST_Touches, ST_Within and ST_Contains.
 ```sql
 SELECT name, ST_AsText(geom)
 FROM nyc_subway_stations
@@ -412,5 +412,98 @@ SELECT name, boroname
 FROM nyc_neighborhoods
 WHERE ST_Intersects(geom, ST_GeomFromText('POINT(583571 4506714)',26918));
 ```
-ST_Touches
-ST_Within and ST_Contains
+ ST_Distance and ST_DWithin
+```sql
+SELECT ST_Distance(
+  ST_GeometryFromText('POINT(0 5)'),
+  ST_GeometryFromText('LINESTRING(-2 2, 2 2)'));
+--Using our Broad Street subway station again, we can find the streets nearby (within 10 meters of) the subway stop:
+SELECT name
+FROM nyc_streets
+WHERE ST_DWithin(
+        geom,
+        ST_GeomFromText('POINT(583571 4506714)',26918),
+        10
+      );
+```
+Refer to spatial relationship exercises here:
+http://postgis.net/workshops/postgis-intro/spatial_relationships_exercises.html
+
+## Spatial Joins: 
+```sql
+SELECT
+  subways.name AS subway_name,
+  neighborhoods.name AS neighborhood_name,
+  neighborhoods.boroname AS borough
+FROM nyc_neighborhoods AS neighborhoods
+JOIN nyc_subway_stations AS subways
+ON ST_Contains(neighborhoods.geom, subways.geom)
+WHERE subways.name = 'Broad St';
+
+SELECT
+  neighborhoods.name AS neighborhood_name,
+  Sum(census.popn_total) AS population,
+  100.0 * Sum(census.popn_white) / Sum(census.popn_total) AS white_pct,
+  100.0 * Sum(census.popn_black) / Sum(census.popn_total) AS black_pct
+FROM nyc_neighborhoods AS neighborhoods
+JOIN nyc_census_blocks AS census --by default this is an inner join
+ON ST_Intersects(neighborhoods.geom, census.geom)
+WHERE neighborhoods.boroname = 'Manhattan'
+GROUP BY neighborhoods.name
+ORDER BY white_pct DESC;
+
+SELECT
+  100.0 * Sum(popn_white) / Sum(popn_total) AS white_pct,
+  100.0 * Sum(popn_black) / Sum(popn_total) AS black_pct,
+  Sum(popn_total) AS popn_total
+FROM nyc_census_blocks AS census
+JOIN nyc_subway_stations AS subways
+ON ST_DWithin(census.geom, subways.geom, 200)
+WHERE strpos(subways.routes,'A') > 0; --strpos() returns greater than zero if true.
+```
+Refer to spatial join exercises here:
+http://postgis.net/workshops/postgis-intro/joins_exercises.html
+
+## Spatial Indexing: 
+Both PostGIS and Oracle Spatial share the same “R-Tree” [1] spatial index structure.
+### Analysing and Vacuuming:
+1. To ensure the statistics match your table contents, it is wise the to run the ANALYZE command after bulk data loads and deletes in your tables. This force the statistics system to gather data for all your indexed columns.
+2. Enabled by default, autovacuum both vacuums (recovers space) and analyzes (updates statistics) on your tables at sensible intervals determined by the level of activity. While this is essential for highly transactional databases, it is not advisable to wait for an autovacuum run after adding indices or bulk-loading data. If a large batch update is performed, you should manually run VACUUM.
+
+```sql
+VACUUM ANALYZE nyc_census_blocks;
+```
+## Projecting Data: 
+Let’s convert the coordinates of the ‘Broad St’ subway station into geographics:
+```sql
+SELECT ST_AsText(ST_Transform(geom,4326))
+FROM nyc_subway_stations
+WHERE name = 'Broad St';
+--Result:
+POINT(-74.0106714688735 40.7071048155841)
+```
+“What is the length of all streets in New York, as measured in SRID 2831?”
+```sql
+SELECT Sum(ST_Length(ST_Transform(geom,2831)))
+  FROM nyc_streets;
+```
+## Geometry Constructing: 
+ST_Buffer
+-- Make a new table with a Liberty Island 500m buffer zone
+CREATE TABLE liberty_island_zone AS
+SELECT ST_Buffer(geom,500)::geometry(Polygon,26918) AS geom -- :: is a CAST operation.
+FROM nyc_census_blocks
+WHERE blkid = '360610001001001';
+
+ST_Intersection and ST_Union
+http://postgis.net/workshops/postgis-intro/geometry_returning.html#st-intersection
+
+## Validity: 
+Validity is most important for polygons, which define bounded areas and require a good deal of structure. Lines are very simple and cannot be invalid, nor can points.
+```sql
+-- Find all the invalid polygons and what their problem is
+SELECT name, boroname, ST_IsValidReason(geom)
+FROM nyc_neighborhoods
+WHERE NOT ST_IsValid(geom);
+```
+
