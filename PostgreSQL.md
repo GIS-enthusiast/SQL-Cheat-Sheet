@@ -372,6 +372,41 @@ FROM nyc_streets
 GROUP BY type
 ORDER BY length DESC;
 ```
+## Schemas: 
+Schemas allow two things:
+1. For production purposes, they improve management.
+2. Keeps different users from treading on each other as users can have different accessibilities. 
 
+Manipulating the search_path is a nice way to provide access to tables in multiple schemas without lots of extra typing.
+```sql
+ALTER USER postgres SET search_path = census, public;
+```
+By default, every role in Oracle is given a personal schema. This is a nice practice to use for PostgreSQL users too, and is easy to replicate using PostgreSQL roles, schemas, and search paths.
 
-  
+```sql
+CREATE USER myuser WITH ROLE postgis_writer;
+CREATE SCHEMA myuser AUTHORIZATION myuser;
+```
+## Spatial Relationships: 
+ST_Equals(geometry A, geometry B) tests the spatial equality of two geometries.
+```sql
+SELECT name, geom, ST_AsText(geom)
+FROM nyc_subway_stations
+WHERE name = 'Broad St';
+--Then, plug the geometry representation back into an ST_Equals test:
+SELECT name
+FROM nyc_subway_stations
+WHERE ST_Equals(geom, '0101000020266900000EEBD4CF27CF2141BC17D69516315141');
+```
+ST_Intersects, ST_Crosses, and ST_Overlaps test whether the interiors of the geometries intersect, and ST_Disjoint checks that they do not intersect, although checking "not intersects" is better because they can be spatially indexed.
+```sql
+SELECT name, ST_AsText(geom)
+FROM nyc_subway_stations
+WHERE name = 'Broad St';
+
+SELECT name, boroname
+FROM nyc_neighborhoods
+WHERE ST_Intersects(geom, ST_GeomFromText('POINT(583571 4506714)',26918));
+```
+ST_Touches
+ST_Within and ST_Contains
