@@ -1,3 +1,5 @@
+{:toc}
+
 # SQL-Cheat-Sheet
 
 ## Queries
