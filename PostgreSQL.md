@@ -507,4 +507,28 @@ SELECT name, boroname, ST_IsValidReason(geom)
 FROM nyc_neighborhoods
 WHERE NOT ST_IsValid(geom);
 ```
+### Repairing Validity: 
+```sql
+-- Side table of invalids
+CREATE TABLE nyc_neighborhoods_invalid AS
+SELECT * FROM nyc_neighborhoods
+WHERE NOT ST_IsValid(geom);
 
+-- Remove them from the main table
+DELETE FROM nyc_neighborhoods
+WHERE NOT ST_IsValid(geom);
+```
+## Equality: 
+Two geometries can have equal bounds (bounding box), be spatially equal, but be not exactly equal (different vertex positions).
+ST_Equals checks for spatial equality
+```sql
+  SELECT a.name, b.name, CASE WHEN ST_Equals(a.poly, b.poly) -- CASE WHEN returns a results column called case text with either THEN or ELSE strings.
+    THEN 'Spatially Equal' ELSE 'Not Equal' end
+  FROM polygons as a, polygons as b;
+  ```
+  Equal bounds operator  ~=
+```sql
+  SELECT a.name, b.name, CASE WHEN a.poly ~= b.poly
+    THEN 'Equal Bounds' ELSE 'Non-equal Bounds' end
+  FROM polygons as a, polygons as b;
+  ```
