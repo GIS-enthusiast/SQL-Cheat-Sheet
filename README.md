@@ -1,8 +1,6 @@
 # SQL/PostGIS-Cheat-Sheet
 
-{:toc}
-
-* TOC {:toc}
+If you happen accross this README in your search to refresh or learn SQL then I absolutely recommend reading this book available online for free: http://www.sqlrun.com/
 
 # SQL-Cheat-Sheet
 
