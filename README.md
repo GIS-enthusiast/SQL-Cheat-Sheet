@@ -2,6 +2,8 @@
 
 If you happen accross this README in your search to refresh or learn SQL then I absolutely recommend reading this book available online for free: http://www.sqlrun.com/
 
+Paul Ramsey's Crunchy Data Blog: https://info.crunchydata.com/blog/author/paul-ramsey
+
 # SQL-Cheat-Sheet
 
 ## Queries
