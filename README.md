@@ -3,7 +3,11 @@
 Personal cheatsheet and helpful tidbits in a quest to work with Postgres and PostGIS. If you happen accross this README in your search to refresh or learn SQL then I absolutely recommend reading this book available online for free: http://www.sqlrun.com/
 
 Paul Ramsey's Crunchy Data Blog: https://info.crunchydata.com/blog/author/paul-ramsey
+Article on vector tiles: https://info.crunchydata.com/blog/dynamic-vector-tiles-from-postgis
 Check out pg_tileserv: https://github.com/CrunchyData/pg_tileserv and pg_featurserv: https://github.com/CrunchyData/pg_featureserv
+Web maps like to comsume vector files or geojson MVT/GeoJSON. PostGIS produces MVT and GeoJSON.
+pg_tileserv = HTTP endpoints for tables and functions that return MVT tiles
+pg_featureserv = HTTP endpoints for tables and functions that return GeoJSON
 
 # SQL-Cheat-Sheet
 
