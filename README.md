@@ -7,7 +7,34 @@ Check out pg_tileserv: https://github.com/CrunchyData/pg_tileserv and pg_featurs
 
 # SQL-Cheat-Sheet
 
-## Queries
+## Some classic PostGIS questions:
+How many parcels within 1 km of this location?
+```sql
+SELECT address
+FROM parcels
+WHERE ST_Within(
+	geom,
+	'POINT()',
+	1000
+	);
+```
+How far did the bus travel last week?
+```sql
+SELECT Sum(ST_Length(geom))
+FROM vehicle_paths
+WHERE id = 12
+AND date > Now() - '7d';
+```
+A multi layer question: How many trucks are in the service depot? (In GIS a 'filter by layer' operation).
+```sql
+SELECT yards.id, trucks.*
+FROM trucks t
+JOIN yards y
+ON ST_Contains(y.geom,
+		t.geom)
+WHERE y.code = 'service'
+```
+## Postgres Queries
 ```sql
 SELECT first_name AS name 
 FROM people 
